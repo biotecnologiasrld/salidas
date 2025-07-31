@@ -51,9 +51,10 @@ const form = document.getElementById('salidaForm');
       localStorage.setItem('historialSalidas', JSON.stringify(historial));
       cargarHistorial();
     }
-    const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwwSLOH4qw3Pu8pm3Vbg3P3VWoNPnngWIjdlwPmQe4iGZLP0U7uFDlwLNuB-4Bna8BU/exec"; // pon aquí tu URL
+    
+const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwwSLOH4qw3Pu8pm3Vbg3P3VWoNPnngWIjdlwPmQe4iGZLP0U7uFDlwLNuB-4Bna8BU/exec";
 
-async function enviarAGoogleSheets() {
+function enviarAGoogleSheets() {
   const historial = JSON.parse(localStorage.getItem('historialSalidas')) || [];
 
   if (historial.length === 0) {
@@ -70,24 +71,26 @@ async function enviarAGoogleSheets() {
     }
   });
 
-  try {
-    const res = await fetch(GOOGLE_SHEETS_URL, {
-      method: "POST",
-      body: JSON.stringify(historial),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    });
-
-    if (res.ok) {
-      Swal.fire("¡Enviado!", "Los datos fueron enviados correctamente a Google Sheets.", "success");
-      localStorage.removeItem("historialSalidas");
-      cargarHistorial();
-    } else {
-      throw new Error("Error al enviar");
+  fetch(GOOGLE_SHEETS_URL, {
+    method: "POST",
+    body: JSON.stringify(historial),
+    headers: {
+      "Content-Type": "application/json"
     }
-  } catch (err) {
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("La respuesta no fue OK");
+    }
+    return response.text(); // o response.json() si tu script responde JSON
+  })
+  .then(data => {
+    Swal.fire("¡Enviado!", "Los datos fueron enviados correctamente a Google Sheets.", "success");
+    localStorage.removeItem("historialSalidas");
+    cargarHistorial();
+  })
+  .catch(error => {
+    console.error("Error al enviar:", error);
     Swal.fire("Error", "No se pudo enviar a Google Sheets", "error");
-    console.error(err);
-  }
+  });
 }
