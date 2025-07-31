@@ -265,7 +265,7 @@
       localStorage.setItem('historialSalidas', JSON.stringify(historial));
       cargarHistorial();
     }
-    const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycby_8sdmqxxekTdezYGUWlec45AwepVkZwYNe39EqtExmO85GQJw4rDV6kjZrlJQLzE/exec"; // pon aquí tu URL
+    const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbxX0jiC2lugGqFGKzYd1_sXI2H4LrNCgSSEjzvNnDtWxLU7HLlkdMQ2IRF92mCg7guQ/exec"; // pon aquí tu URL
 
 async function enviarAGoogleSheets() {
   const historial = JSON.parse(localStorage.getItem('historialSalidas')) || [];
