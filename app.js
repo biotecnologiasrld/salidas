@@ -52,7 +52,7 @@ const form = document.getElementById('salidaForm');
       cargarHistorial();
     }
     
-const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbyQO_AAzOnYUWFHpl_Vu-POe6HILVWhS_3YCu9J0ax4zuWONK6ziYJ1msXqJFEAzRjvJg/exec";
+const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycby2qXS4BrSooHdUCxfOvcygqhbLYQjj4CSR1MOqb_tfjUS2UTyvwXAf0Ia8bOotyf7Yaw/exec";
 
 function enviarAGoogleSheets() {
   const historial = JSON.parse(localStorage.getItem('historialSalidas')) || [];
