@@ -51,8 +51,8 @@ const form = document.getElementById('salidaForm');
       localStorage.setItem('historialSalidas', JSON.stringify(historial));
       cargarHistorial();
     }
-    
-const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbxW46q732F5JDe2i-1CwfPyLBVpUZiMJWr59FWqtgfhXmQ7ZZBZLT5oRl__gC0fErV6YQ/exec";
+    // PARA ENVIAR
+    const FORMSPREE_URL = "https://formspree.io/f/mjkoolpb";
 
 function enviarAGoogleSheets() {
   const historial = JSON.parse(localStorage.getItem('historialSalidas')) || [];
@@ -62,8 +62,19 @@ function enviarAGoogleSheets() {
     return;
   }
 
+  // Convertimos cada salida en un bloque de texto
+  const cuerpo = historial.map((salida, index) => {
+    return `#${index + 1}
+Producto: ${salida.producto}
+Cantidad: ${salida.cantidad} ${salida.unidad}
+Cliente: ${salida.cliente}
+Fecha: ${salida.fecha}
+Observaciones: ${salida.observaciones || 'Ninguna'}
+`;
+  }).join('\n-----------------------\n\n');
+
   Swal.fire({
-    title: "Enviando datos...",
+    title: "Enviando datos por correo...",
     html: "Por favor espera",
     allowOutsideClick: false,
     didOpen: () => {
@@ -71,26 +82,28 @@ function enviarAGoogleSheets() {
     }
   });
 
-  fetch(GOOGLE_SHEETS_URL, {
+  fetch(FORMSPREE_URL, {
     method: "POST",
-    body: JSON.stringify(historial),
     headers: {
       "Content-Type": "application/json"
-    }
+    },
+    body: JSON.stringify({
+      _replyto: "no-reply@acuaponia.mx",
+      subject: "Registro de Salidas - Acuaponía",
+      message: "Se registraron las siguientes salidas:\n\n" + cuerpo
+    })
   })
   .then(response => {
-    if (!response.ok) {
-      throw new Error("La respuesta no fue OK");
-    }
-    return response.text(); // o response.json() si tu script responde JSON
+    if (!response.ok) throw new Error("Error al enviar el correo");
+    return response.json();
   })
-  .then(data => {
-    Swal.fire("¡Enviado!", "Los datos fueron enviados correctamente a Google Sheets.", "success");
+  .then(() => {
+    Swal.fire("¡Enviado!", "Los datos fueron enviados correctamente por correo.", "success");
     localStorage.removeItem("historialSalidas");
     cargarHistorial();
   })
   .catch(error => {
     console.error("Error al enviar:", error);
-    Swal.fire("Error", "No se pudo enviar a Google Sheets", "error");
+    Swal.fire("Error", "No se pudo enviar el correo", "error");
   });
 }
